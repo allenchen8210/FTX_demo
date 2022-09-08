@@ -4,7 +4,7 @@ from flask import Flask
 from requests import Request, Session
 import json
 import ccxt
-
+import database
 
 
 YOUR_API_KEY = "2CTaC7wxb1s56GTqukpDejOv61cERvytogaX9-WF"
@@ -17,7 +17,9 @@ ftx = ccxt.ftx({
 })
 
 
-
+fetchkey = database.FetchKey("imugly1029@gmail.com")
+apikey = fetchkey.get_apikey()
+secretkey = fetchkey.get_secretkey()
 
 app = Flask(__name__)
 @app.route("/hello")
