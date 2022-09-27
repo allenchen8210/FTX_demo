@@ -95,13 +95,16 @@ def api_orderFTXByJson():
 
 @app.route("/FTX_fetch_positions")
 def FTX_fetch_positions(): 
-   try: 
+    try: 
+        #print(request.args['apiKey'])
+        dict = json.loads(json.dumps(request.get_json(), indent=1))
+
         ftx = ccxt.ftx({
             'headers':{
-                'FTX-SUBACCOUNT': FTX_SUB_ACCOUNT
+                'FTX-SUBACCOUNT': dict["FTX-SUBACCOUNT"]
             },
-            'apiKey': "E1XYXeh2iNzzBvuoKZtuELlRSpxw8LmBDcVKuD5Z",
-            'secret': "RqHYRiaLtoZ3EoQkcKGR4uGjCoX1Xf25yUb0wEpD",
+            'apiKey': dict["apiKey"],
+            'secret': dict["secret"],
             'enableRateLimit': True,
         })
         #symbols = ftx.load_markets()
@@ -110,7 +113,7 @@ def FTX_fetch_positions():
 
         quote = ftx.fetch_balance() # fetch FTX balance, requires authentication.
         return (json.dumps(quote))
-   except:
+    except:
         return ("Authentication Fail")
 
 if __name__ == '__main__':
