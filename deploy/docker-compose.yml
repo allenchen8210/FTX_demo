@@ -3,23 +3,23 @@ version: "3"
 services:
   mysql:
     container_name: mydb
-    #image: bitnami/mysql:latest
+    image: bitnami/mysql:latest
     #image: mysql:latest
     
-    image: mysql:8.0-debian
-    platform: linux/amd64
+    #image: mysql:8.0-debian
+    #platform: linux/amd64
     
     #user: root
     ports:
       - 3306:3306
-    #volumes:
-    #  - ./db/data:/bitnami/mysql/data
+    volumes:
+      - ./db/data:/bitnami/mysql/data
     environment:
       #ALLOW_EMPTY_PASSWORD: "yes"
       #MYSQL_HOST: 127.0.0.1
       #MYSQL_USER: root
       #MYSQL_PASSWORD: pass
-      #MYSQL_DATABASE: test2
+      MYSQL_DATABASE: test2
       MYSQL_ROOT_PASSWORD: pass
       #MYSQL_ROOT_HOST: "%"
 
@@ -31,7 +31,7 @@ services:
       context: ./flask
       dockerfile: Dockerfile
     ports:
-      - 9090:9090
+      - 5000:5000
     depends_on:
       - mysql
     #environment:

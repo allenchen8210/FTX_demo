@@ -23,6 +23,7 @@ sys.path.append('/Users/bur/opt/anaconda3/lib/python3.9/site-packages')
 ```
 python3 flask_request.py --sys_path [path for python3.9 site-packages]
 ```
+* Use `python -m site` to find the **site-packages**
 * example:
 ```
 python3 flask_request.py --sys_path /Users/bur/opt/anaconda3/lib/python3.9/site-packages
@@ -69,6 +70,28 @@ pip3 freeze > requirements.txt
     mysql> GRANT ALL ON *.* TO 'tvbot'@'%'  WITH GRANT OPTION;
     mysql> ALTER USER 'tvbot'@'%' IDENTIFIED WITH mysql_native_password BY 'pass';
     mysql> FLUSH PRIVILEGES;
+    ```
+* Container deployment
+    * After use docker-compose to lauch containers (MySQL and app), use CLI to go into MySQL container.
+    ```
+    mysql -u root -p
+    Enter password:[key your password]
+    mysql> SELECT user, host FROM mysql.user;
+    mysql> DROP USER '[username]'@'[host]';
+    ```
+    * For example:
+    ```
+    mysql -u root -p
+    Enter password:pass
+    mysql> SELECT user, host FROM mysql.user;
+    mysql> DROP USER 'root'@'localhost';
+    ```
+    * After delete **'root'@'localhost'**, re-launch the app container.
+
+* Create table
+    ```
+    mysql> use test2;
+    mysql> CREATE TABLE user_info (dc_id VARCHAR(255), api_key VARCHAR(255), secret_key VARCHAR(255), ftx_sub_account VARCHAR(255), lv2_cert VARCHAR(255), market_info VARCHAR(255));
     ```
 
 ## Python

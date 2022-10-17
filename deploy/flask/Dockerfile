@@ -18,8 +18,12 @@ RUN apk add \
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY . /app
+
+EXPOSE 5000
 #RUN export FLASK_APP=flask_request.py
-CMD [ "python3", "mysql_interface.py" ]
+#CMD [ "python3", "mysql_interface.py" ]
+#CMD [ "python3", "flask_request.py"]
+CMD [ "python3", "flask_request.py", "--site_path", "/usr/local/lib/python3.8/site-packages"]
 
 
 #FROM python:3.9-alpine as base

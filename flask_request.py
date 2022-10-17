@@ -1,7 +1,8 @@
 import sys
 args = sys.argv[1:]
 if len(args) > 0:
-    sys.path.append(args[1])
+    if args[0] == "--sys_path":
+        sys.path.append(args[1])
 from flask import request
 from flask import Flask
 from requests import Request, Session
@@ -79,8 +80,9 @@ class Handler():
         ftx_sub_account = dict["ftx_sub_account"]
         lv2_cert = "Yes" if dict["lv2_cert"] == "Yes" else "No"
         lock.acquire()
-        self.db.set_db_user_data(dc_id, api_key, secret_key, ftx_sub_account, lv2_cert)
+        ret = self.db.set_db_user_data(dc_id, api_key, secret_key, ftx_sub_account, lv2_cert)
         lock.release()
+        return ret
 
     def set_db_market_info(self, dict):
         dc_id = dict["dc_id"]
@@ -121,8 +123,8 @@ def api_orderFTX():
 @app.route("/registerUser", methods=['GET', 'POST'])
 def api_registerUser():
     if request.method=='POST':
-        handler.set_db_user_data(json.loads(json.dumps(request.get_json(), indent=1)))
-        return "Register success!"
+        ret = handler.set_db_user_data(json.loads(json.dumps(request.get_json(), indent=1)))
+        return ret
 
 @app.route("/updateMarketInfo", methods=['GET', 'POST'])
 def api_updateMarketInfo():
@@ -158,7 +160,7 @@ if __name__ == '__main__':
     t_list.append(Thread(target=handler.fetch_user_info))
     for t in t_list:
         t.start()
-    app.run()
+    app.run(host = "0.0.0.0")
     for t in t_list:
         t.join()
 

@@ -10,6 +10,7 @@ db = mysql.connector.connect(
   port = 3306,
   user="root",
   password="pass",
+  #password="1029*Lbx",
   database="test2",
   autocommit=True
 )
@@ -55,9 +56,19 @@ class DBHandler():
         return self.__user_table
 
     def set_db_user_data(self, dc_id, api_key, secret_key, ftx_sub_account, lv2_cert = "No", market_info = {}):
-        sql = "INSERT INTO user_info (dc_id, api_key, secret_key, ftx_sub_account, lv2_cert, market_info) VALUES (%s, %s, %s, %s, %s, %s)"
-        val = (dc_id, api_key, secret_key, ftx_sub_account, lv2_cert, json.dumps(market_info))
-        cursor.execute(sql, val)
+        sql = "SELECT EXISTS(SELECT * FROM user_info WHERE dc_id = %s)"
+        id = (dc_id, )
+        cursor.execute(sql, id)
+        result = cursor.fetchone()
+        ret = ""
+        if result[0] == 1:
+            ret = "User already exists!"
+        else:
+            sql = "INSERT INTO user_info (dc_id, api_key, secret_key, ftx_sub_account, lv2_cert, market_info) VALUES (%s, %s, %s, %s, %s, %s)"
+            val = (dc_id, api_key, secret_key, ftx_sub_account, lv2_cert, json.dumps(market_info))
+            cursor.execute(sql, val)
+            ret = "Register success!"
+        return ret
 
     def set_db_market_info_amount(self, id, market, params):
         sql = "SELECT market_info FROM user_info WHERE dc_id = %s"

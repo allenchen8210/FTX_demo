@@ -47,8 +47,8 @@ class FTXWrapper():
                 symbol = self.symbol_map[symbol]
                 print("symbol: {}, type: {}, side: {}, amount: {}"
                     .format(symbol, type, side, amount))
-                #order = user_dict["exchange"].create_order(symbol, type, side, amount)
-                #print(order)
+                order = user_dict["exchange"].create_order(symbol, type, side, amount)
+                print(order)
         
         t_list = []
         for i, user in enumerate(self.__user_info):
