@@ -3,8 +3,8 @@ version: "3"
 services:
   mysql:
     container_name: mydb
-    image: bitnami/mysql:latest
-    #image: mysql:latest
+    #image: bitnami/mysql:latest
+    image: mysql:latest
     
     #image: mysql:8.0-debian
     #platform: linux/amd64
@@ -13,7 +13,8 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ./db/data:/bitnami/mysql/data
+      #- ./db/data:/bitnami/mysql/data
+      - ./db/data:/mydb/data
     environment:
       #ALLOW_EMPTY_PASSWORD: "yes"
       #MYSQL_HOST: 127.0.0.1
