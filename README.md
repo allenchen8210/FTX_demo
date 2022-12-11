@@ -89,10 +89,16 @@ pip3 freeze > requirements.txt
     * After delete **'root'@'localhost'**, re-launch the app container.
 
 * Create table
-    ```
-    mysql> use test2;
-    mysql> CREATE TABLE user_info (dc_id VARCHAR(255), api_key VARCHAR(255), secret_key VARCHAR(255), ftx_sub_account VARCHAR(255), lv2_cert VARCHAR(255), market_info VARCHAR(255));
-    ```
+    * FTX
+        ```
+        mysql> use test2;
+        mysql> CREATE TABLE ftx_user_info (dc_id VARCHAR(255), api_key VARCHAR(255), secret_key VARCHAR(255), ftx_sub_account VARCHAR(255), lv2_cert VARCHAR(255), market_info VARCHAR(255));
+        ```
+    * Binance
+        ```
+        mysql> use test2;
+        mysql> CREATE TABLE binance_user_info (dc_id VARCHAR(255), api_key VARCHAR(255), secret_key VARCHAR(255), market_info VARCHAR(255));
+        ```
 
 ## Python
 * [From conda create requirements.txt for pip3](https://stackoverflow.com/questions/50777849/from-conda-create-requirements-txt-for-pip3)

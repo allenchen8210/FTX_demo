@@ -18,6 +18,7 @@ from threading import Thread, Lock
 import os
 
 FTX_SUB_ACCOUNT = "test1"
+BINANCE_TESTNET = True
 
 """
 YOUR_API_KEY = "2CTaC7wxb1s56GTqukpDejOv61cERvytogaX9-WF"
@@ -40,7 +41,11 @@ class Handler():
         self.p_list = []
         self.__order_info = {}
         self.__user_info = {}
-        self.exchange_config = exchanges.FTXWrapper()
+        self.__exchange = "binance"
+        if self.__exchange == "binance":
+            self.exchange_config = exchanges.BinanceWrapper()
+        else:
+            self.exchange_config = exchanges.FTXWrapper()
         self.db = database.DBHandler()
     def set_order_info(self, order_info):
         self.__order_info = order_info
@@ -51,36 +56,51 @@ class Handler():
     def get_user_info(self):
         return self.__user_info
     def fetch_user_info(self):
-        while True:
-            lock.acquire()
-            user_info = self.db.get_user_info()
-            for info in user_info.values():
-                info["exchange"] = ccxt.ftx({
-                    'headers':{
-                        'FTX-SUBACCOUNT': info["ftx_sub_account"]
-                    },
-                    'apiKey': info["api_key"],
-                    'secret': info["secret_key"],
-                    #'options': {
-                    #    'defaultType': 'future',  # -------------- quotes and 'future'
-                    #},
-                })
-            self.set_user_info(user_info)
-            lock.release()
-            time.sleep(1)
+        if self.__exchange == "binance":
+            while True:
+                lock.acquire()
+                user_info = self.db.get_user_info(self.__exchange)
+                for info in user_info.values():
+                    info["exchange"] = ccxt.binance({
+                        'apiKey': info["api_key"],
+                        'secret': info["secret_key"],
+                        'enableRateLimit': True,
+                        'options': {
+                            'defaultType': 'future',
+                            #'createMarketBuyOrderRequiresPrice': False,
+                            #'quoteOrderQty': True,
+                        },
+                    })
+                    info["exchange"].set_sandbox_mode(BINANCE_TESTNET)
+                self.set_user_info(user_info)
+                lock.release()
+                time.sleep(1)
+        elif self.__exchange == "ftx":
+            while True:
+                lock.acquire()
+                user_info = self.db.get_user_info(self.__exchange)
+                for info in user_info.values():
+                    info["exchange"] = ccxt.ftx({
+                        'headers':{
+                            'FTX-SUBACCOUNT': info["ftx_sub_account"]
+                        },
+                        'apiKey': info["api_key"],
+                        'secret': info["secret_key"],
+                        #'options': {
+                        #    'defaultType': 'future',  # -------------- quotes and 'future'
+                        #},
+                    })
+                self.set_user_info(user_info)
+                lock.release()
+                time.sleep(1)
 
     def set_exchange_config(self, order_info, user_info):
         self.exchange_config.set_order_info(order_info)
         self.exchange_config.set_user_info(user_info)
 
     def set_db_user_data(self, dict):
-        dc_id = dict["dc_id"]
-        api_key = dict["api_key"]
-        secret_key = dict["secret_key"]
-        ftx_sub_account = dict["ftx_sub_account"]
-        lv2_cert = "Yes" if dict["lv2_cert"] == "Yes" else "No"
         lock.acquire()
-        ret = self.db.set_db_user_data(dc_id, api_key, secret_key, ftx_sub_account, lv2_cert)
+        ret = self.db.set_db_user_data(dict)
         lock.release()
         return ret
 
@@ -90,8 +110,13 @@ class Handler():
             if "amount" in market.keys():
                 #print(market.keys())
                 lock.acquire()
-                self.db.set_db_market_info_amount(dc_id, market["symbol"], market["amount"])
+                self.db.set_db_market_info_amount(dc_id, market)
                 lock.release()
+    def create_order(self):
+        if self.__exchange == "binance":
+            self.exchange_config.binance_create_order()
+        elif self.__exchange == "ftx":
+            self.exchange_config.ftx_create_order()
 
 handler = Handler()
 
@@ -101,18 +126,19 @@ def api_orderFTX():
     if request.method=='POST':
         #begin = time.time()
         #lock.acquire()
-        #print(json.dumps(request.get_json(), indent=1)) # JSON object
+        print(json.dumps(request.get_json(), indent=1)) # JSON object
         #handler.order_info = json.loads(json.dumps(request.get_json(), indent=1)) # Dictionary object
         handler.set_order_info(json.loads(json.dumps(request.get_json(), indent=1)))
 
         order_info = dict(handler.get_order_info())
         user_info = dict(handler.get_user_info())
-        #print(order_info)
+        print(order_info)
         #print(user_info["547083804150464513"]["market_info"])
         #print(user_info["547083804150464513"])
 
         handler.set_exchange_config(order_info, user_info)
-        handler.exchange_config.ftx_create_order()
+        #handler.exchange_config.ftx_create_order()
+        handler.create_order()
         #end = time.time()
         #print("{} s".format(end - begin))
         #lock.release()
