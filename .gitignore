@@ -1,7 +1,5 @@
 .DS_Store
 database/serviceAccountKey.json
 /db/data
-deploy/db/data
-deploy/gmail_bot/credentials.json
-deploy/gmail_bot/token.pickle
+deploy/
 mv_deploy.sh

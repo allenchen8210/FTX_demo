@@ -114,3 +114,9 @@ pip list --format=freeze > requirements.txt
 docker-compose -f docker-compose.yml build
 docker-compose -f docker-compose.yml up -d
 ```
+
+# Misc
+## Docker Deployment (local computer)
+* Use `mv_deploy.sh` to move files for development to folder `deploy`.
+* Deploy order: MySQL -> Server -> Gmail Bot.
+* After MySQL container is launched, use Postman to insert user data into table.

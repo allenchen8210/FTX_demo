@@ -14,6 +14,7 @@ services:
       - 3306:3306
     volumes:
       #- ./db/data:/bitnami/mysql/data
+      - ./db/data/application/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./db/data:/mydb/data
     environment:
       #ALLOW_EMPTY_PASSWORD: "yes"
